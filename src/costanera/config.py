@@ -7,10 +7,13 @@ from pathlib import Path
 
 RAIZ = Path(__file__).resolve().parents[2]
 DATOS_CRUDOS = RAIZ / "data" / "raw" / "Mall_Customers.xlsx"
+# Respuesta a la campaña de renovación de consentimiento (Ley 21.719), cerrada el 22/12/2026
+CONSENTIMIENTO = RAIZ / "data" / "raw" / "consentimiento_renovacion_2026-12.csv"
 DATOS_PROCESADOS = RAIZ / "data" / "processed"
 REPORTES = RAIZ / "reports"
 FIGURAS = REPORTES / "figuras"
 REGISTRO_EXPERIMENTOS = REPORTES / "registro_experimentos.csv"
+REGISTRO_EJECUCIONES = REPORTES / "registro_ejecuciones.csv"
 
 SEMILLA = 42
 
@@ -50,3 +53,7 @@ CRITERIOS = {
     "brecha_max_pp": 15.0,       # brecha máxima de composición, en puntos porcentuales
 }
 REMUESTREOS = 30
+
+# Monitoreo de la herramienta final (RF.11 y RF.12)
+PSI_ALERTA = 0.20          # índice de estabilidad poblacional sobre el que se avisa deriva
+MIN_CONSENTIDOS = 150      # plan de contingencia de R14: bajo esto se informa la limitación

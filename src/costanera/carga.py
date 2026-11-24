@@ -79,3 +79,23 @@ def cargar(ruta=config.DATOS_CRUDOS) -> tuple[pd.DataFrame, ResumenCarga]:
         duplicados_id=int(df["id_cliente"].duplicated().sum()),
     )
     return validos.reset_index(drop=True), resumen
+
+
+def agregar_consentimiento(df: pd.DataFrame, ruta=config.CONSENTIMIENTO) -> tuple[pd.DataFrame, dict]:
+    """Cruza la base con la respuesta a la campaña de renovación (paquete 2.3.2, RNF.4).
+
+    Un cliente que no aparece en el archivo de consentimiento queda sin consentimiento: ante la
+    duda, no se trata su información.
+    """
+    resp = pd.read_csv(ruta).rename(columns={"CustomerID": "id_cliente"})
+    resp["consentimiento"] = resp["consentimiento_vigente"].astype(str).str.strip().str.lower().isin(["si", "sí", "1", "true"])
+    salida = df.merge(resp[["id_cliente", "consentimiento"]], on="id_cliente", how="left")
+    salida["consentimiento"] = salida["consentimiento"].fillna(False).astype(bool)
+    resumen = {
+        "clientes": len(salida),
+        "con_consentimiento": int(salida["consentimiento"].sum()),
+        "sin_respuesta": int((~df["id_cliente"].isin(resp["id_cliente"])).sum()),
+    }
+    resumen["pct_con_consentimiento"] = round(resumen["con_consentimiento"] / resumen["clientes"] * 100, 1)
+    resumen["sobre_minimo"] = resumen["con_consentimiento"] >= config.MIN_CONSENTIDOS
+    return salida, resumen
