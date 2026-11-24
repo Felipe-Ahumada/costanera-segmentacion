@@ -1,0 +1,32 @@
+# Entornos virtuales
+.venv/
+venv/
+env/
+
+# Python
+__pycache__/
+*.py[cod]
+*.egg-info/
+.pytest_cache/
+
+# Jupyter
+.ipynb_checkpoints/
+
+# Archivos que genera el proyecto al ejecutarse
+data/processed/
+reports/
+
+# Variables de entorno y credenciales
+.env
+.env.*
+*.key
+*.pem
+
+# Sistema operativo y editores
+.DS_Store
+Thumbs.db
+.vscode/
+.idea/
+
+# Archivos temporales de Office
+~$*
