@@ -6,12 +6,17 @@ import pandas as pd
 import pytest
 
 sys.path.insert(0, str(Path(__file__).resolve().parents[1] / "src"))
-from costanera import carga, config, fichas, pipeline, preparacion  # noqa: E402
+from costanera import carga, config, fichas, monitoreo, pipeline, preparacion  # noqa: E402
 
 
 @pytest.fixture(scope="module")
 def corrida():
     return pipeline.ejecutar(k=5, version="test", registrar=False)
+
+
+@pytest.fixture(scope="module")
+def corrida_v2():
+    return pipeline.ejecutar(k=5, version="test_v2", consentimiento=None, registrar=False)
 
 
 def test_rf1_conteo_de_carga_cuadra():
@@ -56,3 +61,35 @@ def test_rf10_recalculo_da_los_mismos_resultados(corrida):
 def test_seudonimo_estable():
     assert preparacion.seudonimo(1) == preparacion.seudonimo(1)
     assert preparacion.seudonimo(1) != preparacion.seudonimo(2)
+
+
+def test_rnf4_version_final_solo_con_consentimiento(corrida):
+    base = corrida["base"]
+    assert base["consentimiento"].all()
+    assert len(base) == corrida["resumen_consentimiento"]["con_consentimiento"]
+
+
+def test_rf5_todo_cliente_con_consentimiento_tiene_segmento(corrida):
+    assert (corrida["base"]["segmento"] > 0).all()
+
+
+def test_rf11_compara_con_la_segmentacion_anterior(corrida_v2):
+    r = pipeline.ejecutar(k=5, version="test", anterior=corrida_v2["ruta_base"], registrar=False)
+    c = r["comparacion"]
+    assert c["clientes_comparados"] == len(r["base"])
+    assert c["matriz"].values.sum() == c["clientes_comparados"]
+
+
+def test_rf12_avisa_cuando_los_datos_cambian(corrida):
+    base = corrida["base"]
+    assert not monitoreo.alerta_deriva(base, base)["alerta"].any()
+    futura = base.assign(ingreso_anual_k=base["ingreso_anual_k"] * 1.3)
+    assert monitoreo.alerta_deriva(base, futura).set_index("variable").loc["ingreso_anual_k", "alerta"]
+
+
+def test_rnf12_registro_de_ejecuciones(tmp_path):
+    ruta = tmp_path / "registro.csv"
+    monitoreo.registrar_ejecucion("test", "archivo.xlsx", 5, 172, 0, ruta=ruta)
+    monitoreo.registrar_ejecucion("test", "archivo.xlsx", 5, 172, 1, ruta=ruta)
+    assert monitoreo.resumen_uso(ruta)["ejecuciones"] == 2
+    assert "seudonimo" not in pd.read_csv(ruta).columns
