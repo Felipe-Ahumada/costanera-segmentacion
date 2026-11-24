@@ -1,12 +1,12 @@
 # Segmentación de clientes de Costanera Andina
 
-Este proyecto agrupa a los clientes del programa de fidelización de un centro comercial según su ingreso anual y su índice de gasto, para que el equipo de Marketing pueda diseñar una campaña distinta para cada grupo en lugar de una sola campaña para todos. Lo desarrollé para la asignatura Gestión de Proyectos de Datos (SCY1102) de Duoc UC, siguiendo la metodología CRISP-DM en iteraciones.
+Este proyecto agrupa a los clientes del programa de fidelización de un centro comercial según su ingreso anual y su índice de gasto, para que el equipo de Marketing pueda diseñar una campaña distinta para cada grupo en lugar de una sola campaña para todos. Lo desarrollamos para la asignatura Gestión de Proyectos de Datos (SCY1102) de Duoc UC, siguiendo la metodología CRISP-DM en iteraciones.
 
 ## Qué hace
 
 La herramienta lee el archivo de clientes, revisa que los datos estén completos y sin duplicados, reemplaza el identificador de cada cliente por un seudónimo y agrupa a los clientes con K-means. Al final entrega un Excel con una ficha por segmento y la lista de clientes de cada uno. También revisa que los segmentos no dejen fuera a algún grupo de edad o de género, porque la idea es que ninguna campaña discrimine.
 
-Con los datos actuales se forman cinco segmentos: Premium, Entusiastas, Estándar, Sensibles al precio y Potencial por activar. Los grupos quedan bien separados (silueta de 0,555) y se mantienen casi iguales cuando se cambia la muestra (estabilidad de 0,976). Antes de quedarme con K-means lo comparé con un agrupamiento jerárquico, que llegó a los mismos segmentos, y con DBSCAN, que dejaba clientes sin grupo.
+Con los datos actuales se forman cinco segmentos: Premium, Entusiastas, Estándar, Sensibles al precio y Potencial por activar. Los grupos quedan bien separados (silueta de 0,555) y se mantienen casi iguales cuando se cambia la muestra (estabilidad de 0,976). Antes de quedarnos con K-means lo comparamos con un agrupamiento jerárquico, que llegó a los mismos segmentos, y con DBSCAN, que dejaba clientes sin grupo.
 
 ## Requisitos
 
@@ -53,6 +53,6 @@ Cada iteración terminada tiene su etiqueta. La etiqueta v1-iteracion1 correspon
 
 El archivo Mall_Customers.xlsx es un conjunto público de práctica con 200 clientes. Costanera Andina es un caso académico, así que los datos no corresponden a personas reales.
 
-## Autor
+## Autores
 
-Felipe Ahumada Silva
+Felipe Ahumada Silva y Francisca Carrasco Lozano
