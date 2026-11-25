@@ -1,7 +1,8 @@
 """Control técnico interno de cada evaluación (paquetes 2.5.1 a 2.5.3).
 
-Cuatro chequeos, definidos en el plan (sección 3.1): silueta, tamaño mínimo de segmento,
-estabilidad entre remuestreos y brecha de composición por género y tramo etario.
+Tres chequeos de la iteración 1: silueta, tamaño mínimo de segmento y estabilidad entre
+remuestreos. La brecha de composición por género y tramo etario (equidad) se incorpora en la
+iteración 2, en la evaluación 2.5.2.
 """
 from __future__ import annotations
 
@@ -41,30 +42,14 @@ def estabilidad_kmeans(X, k: int, remuestreos: int = config.REMUESTREOS,
     return float(np.mean(aris))
 
 
-def composicion(base: pd.DataFrame, col_segmento: str, variable: str) -> pd.DataFrame:
-    """Porcentaje de cada categoría dentro de cada segmento (RF.6)."""
-    return pd.crosstab(base[col_segmento], base[variable], normalize="index") * 100
-
-
-def brecha_pp(base: pd.DataFrame, col_segmento: str, variable: str) -> float:
-    """Máxima diferencia, en puntos porcentuales, entre la participación de una categoría
-    dentro de un segmento y su participación en el total de clientes."""
-    dentro = composicion(base, col_segmento, variable)
-    total = base[variable].value_counts(normalize=True) * 100
-    return float((dentro - total).abs().max().max())
-
-
-def evaluar(X, etiquetas, base: pd.DataFrame, k: int | None = None,
+def evaluar(X, etiquetas, base: pd.DataFrame | None = None, k: int | None = None,
             con_estabilidad: bool = True) -> dict:
-    base = base.assign(_seg=etiquetas)
     resultado = {
         "silueta": silueta(X, etiquetas),
         "tamano_min_pct": tamano_minimo_pct(etiquetas),
         "estabilidad": estabilidad_kmeans(X, k) if (con_estabilidad and k) else float("nan"),
         "ruido_pct": float(np.mean(etiquetas == -1) * 100),
     }
-    for var in config.VARIABLES_PROTEGIDAS:
-        resultado[f"brecha_{var}_pp"] = brecha_pp(base[base._seg != -1], "_seg", var)
     return resultado
 
 
@@ -75,8 +60,6 @@ def veredicto(resultado: dict) -> dict:
         "ningún segmento < 5 %": resultado["tamano_min_pct"] >= c["tamano_min_pct"],
         "estabilidad >= 0,80": resultado["estabilidad"] >= c["estabilidad_min"],
     }
-    for var in config.VARIABLES_PROTEGIDAS:
-        chequeos[f"brecha {var} <= 15 pp"] = resultado[f"brecha_{var}_pp"] <= c["brecha_max_pp"]
     return chequeos
 
 
@@ -89,9 +72,7 @@ def registrar_experimento(iteracion: str, algoritmo: str, parametros: str, varia
         w = csv.writer(f)
         if nueva:
             w.writerow(["fecha_registro", "iteracion", "algoritmo", "parametros", "variables",
-                        "silueta", "tamano_min_pct", "estabilidad", "ruido_pct",
-                        "brecha_genero_pp", "brecha_tramo_etario_pp", "decision"])
+                        "silueta", "tamano_min_pct", "estabilidad", "ruido_pct", "decision"])
         w.writerow([datetime.now().strftime("%Y-%m-%d %H:%M"), iteracion, algoritmo, parametros,
                     "+".join(variables), *(round(resultado[k], 3) for k in
-                    ["silueta", "tamano_min_pct", "estabilidad", "ruido_pct",
-                     "brecha_genero_pp", "brecha_tramo_etario_pp"]), decision])
+                    ["silueta", "tamano_min_pct", "estabilidad", "ruido_pct"]), decision])

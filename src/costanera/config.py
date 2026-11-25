@@ -47,6 +47,5 @@ CRITERIOS = {
     "silueta_min": 0.40,         # Rousseeuw (1987)
     "tamano_min_pct": 5.0,       # ningún segmento bajo 5 %
     "estabilidad_min": 0.80,     # ARI medio entre remuestreos
-    "brecha_max_pp": 15.0,       # brecha máxima de composición, en puntos porcentuales
 }
 REMUESTREOS = 30

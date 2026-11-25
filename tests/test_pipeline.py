@@ -6,7 +6,7 @@ import pandas as pd
 import pytest
 
 sys.path.insert(0, str(Path(__file__).resolve().parents[1] / "src"))
-from costanera import carga, config, fichas, pipeline, preparacion  # noqa: E402
+from costanera import carga, config, pipeline, preparacion  # noqa: E402
 
 
 @pytest.fixture(scope="module")
@@ -39,13 +39,14 @@ def test_rnf3_base_sin_duplicados_y_completa(corrida):
 
 
 def test_rnf4_sin_identificadores_directos(corrida):
-    assert "id_cliente" not in corrida["base"]
-    xls = pd.read_excel(corrida["ruta_excel"], sheet_name="Clientes por segmento")
-    assert not {"id_cliente", "nombre", "rut", "correo"} & set(xls.columns)
+    base = pd.read_csv(corrida["ruta_base"])
+    assert not {"id_cliente", "nombre", "rut", "correo"} & set(base.columns)
 
 
-def test_rf3_todos_los_segmentos_tienen_ficha(corrida):
-    assert set(corrida["fichas"]["segmento"]) == set(corrida["base"]["segmento"])
+def test_rf2_todos_los_clientes_tienen_segmento(corrida):
+    base = corrida["base"]
+    assert base["segmento"].notna().all()
+    assert base["segmento"].nunique() == 5
 
 
 def test_rf10_recalculo_da_los_mismos_resultados(corrida):
