@@ -47,7 +47,7 @@ La carpeta data/raw tiene el archivo de entrada. En src/costanera está el códi
 
 ## Versiones
 
-Cada iteración terminada tiene su etiqueta. La etiqueta v1-iteracion1 corresponde al modelo base y v2-iteracion2 a la comparación de algoritmos, las fichas de perfil y la revisión de equidad.
+Cada iteración terminada tiene su etiqueta. La etiqueta v1-iteracion1 corresponde al modelo base. La iteración 2 (comparación de algoritmos, fichas de perfil y revisión de equidad) está en curso y su etiqueta se creará cuando termine su evaluación con Marketing (H3, 04/12/2026). El trabajo adelantado de las iteraciones 2 y 3 está en la rama desarrollo-anticipado.
 
 ## Sobre los datos
 
